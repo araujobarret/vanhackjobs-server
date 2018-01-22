@@ -19,6 +19,7 @@ router.post('/jobs', (req, res) => {
     }
   }
 
+  console.log("Page "+ page + " CALC = " + (page.page*5);
   Job.find(body)
     .skip(page.page*5)
     .limit(5)
