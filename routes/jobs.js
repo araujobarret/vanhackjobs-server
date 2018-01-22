@@ -11,15 +11,18 @@ router.post('/jobs', (req, res) => {
   let body = _.pick(req.body, ['location.country', 'location.city']);
   let bodyArray = _.pick(req.body, ['skills']);
   let page = _.pick(req.body, ['page']);
+  // Check if the page is passed, if not goes to page 0
+  let pageValue = page.page ? page.page : 0;
   let paramsSkills = {};
 
+  // Check if the skills are present to filter
   if(bodyArray.skills) {
     body["skills"] = {
       $in: bodyArray.skills
     }
   }
 
-  console.log("Page "+ page + " CALC = " + (page.page*5));
+  // Does the query skiping data if page is setted
   Job.find(body)
     .skip(page.page*5)
     .limit(5)
@@ -39,6 +42,7 @@ router.get('/jobsskills', (req, res) => {
     .catch((e) => res.status(400).send(e));
 });
 
+// Get all countries without duplicity from each document for query fields
 router.get('/jobscountries', (req, res) => {
   Job.aggregate([
     { "$unwind": "$location.country" },
@@ -48,6 +52,7 @@ router.get('/jobscountries', (req, res) => {
     .catch((e) => res.status(400).send(e));
 });
 
+// Get all cities from a specific country without duplicity from each document for query fields
 router.get('/jobscities', (req, res) => {
   let body = _.pick(req.query, ['country']);
 
